@@ -7,8 +7,6 @@ class AuthenticationService {
 
   Future<void> init() async {
     _users = await Hive.openBox<User>('USERS');
-
-    //await _users.clear();
     _users.get(
       User(
         name: _users.values.toString(),
@@ -17,13 +15,6 @@ class AuthenticationService {
         pass: _users.values.toString(),
       ),
     );
-    // _users.get(
-    //   User(
-    //       name: _users.name,
-    //       email: _users.name,
-    //       username: _users.name,
-    //       pass: _users.name),
-    // );
   }
 
   Future<String?> authenticateUser(
