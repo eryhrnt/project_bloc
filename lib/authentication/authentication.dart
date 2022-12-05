@@ -45,20 +45,4 @@ class AuthenticationService {
     final user = _users.values.where((element) => element.username == username);
     return user.toList();
   }
-
-  void addUser(
-    final String name,
-    final String username,
-    final String email,
-    final String pass,
-  ) {
-    _users.add(
-      User(
-        name: name,
-        email: email,
-        username: username,
-        pass: pass,
-      ),
-    );
-  }
 }

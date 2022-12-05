@@ -1,6 +1,8 @@
+import 'package:hive/hive.dart';
 import 'package:project_bloc/app_theme.dart';
 import 'package:project_bloc/dashboard/view/dashboard_page.dart';
 import 'package:project_bloc/dashboard/dashboard.dart';
+import 'package:project_bloc/model/user.dart';
 import 'package:project_bloc/register/view/register_page.dart';
 import 'package:project_bloc/authentication/authentication.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ class LoginPage extends StatelessWidget {
 
   final usernameField = TextEditingController();
   final passField = TextEditingController();
+  final GlobalKey<FormState> _form = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -51,56 +54,75 @@ class LoginPage extends StatelessWidget {
             if (state is LoginInitial) {
               return Container(
                 padding: EdgeInsets.all(AppTheme.mainPadding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Username',
-                      ),
-                      controller: usernameField,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                      ),
-                      controller: passField,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: Size(100, 40),
-                      ),
-                      onPressed: () => BlocProvider.of<LoginBloc>(context).add(
-                        Login(
-                          usernameField.text,
-                          passField.text,
+                child: Form(
+                  key: _form,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Username',
                         ),
+                        controller: usernameField,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return 'Username Required';
+                          }
+                          return null;
+                        },
                       ),
-                      child: Text('Login'),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextButton(
-                      onPressed: (() {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => RegisterPage(
-                              title: 'Register',
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                        ),
+                        controller: passField,
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return 'Password Required';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: Size(100, 40),
+                        ),
+                        onPressed: () {
+                          if (_form.currentState!.validate()) {
+                            BlocProvider.of<LoginBloc>(context).add(
+                              Login(
+                                usernameField.text,
+                                passField.text,
+                              ),
+                            );
+                          }
+                        },
+                        child: Text('Login'),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextButton(
+                        onPressed: (() {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => RegisterPage(
+                                title: 'Register',
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                      child: Text("Don't have an account? Click Here!"),
-                    ),
-                  ],
+                          );
+                        }),
+                        child: Text("Don't have an account? Click Here!"),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }

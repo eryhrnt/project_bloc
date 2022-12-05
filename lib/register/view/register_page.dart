@@ -17,7 +17,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
-  final TextEditingController _taskController = TextEditingController();
+  final TextEditingController _cpassController = TextEditingController();
+  final GlobalKey<FormState> _form = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -25,7 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _usernameController.dispose();
     _passController.dispose();
-    _taskController.dispose();
+    _cpassController.dispose();
     super.dispose();
   }
 
@@ -38,83 +39,121 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(AppTheme.mainPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Name',
+          child: Form(
+            key: _form,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Name',
+                  ),
+                  controller: _nameController,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Name Required';
+                    }
+                    return null;
+                  },
                 ),
-                controller: _nameController,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Email',
+                SizedBox(
+                  height: 20,
                 ),
-                controller: _emailController,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Username',
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                  ),
+                  controller: _emailController,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Email Required';
+                    }
+                    return null;
+                  },
                 ),
-                controller: _usernameController,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Password',
+                SizedBox(
+                  height: 20,
                 ),
-                controller: _passController,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'Confirm Password',
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Username',
+                  ),
+                  controller: _usernameController,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Username Required';
+                    }
+                    return null;
+                  },
                 ),
-                controller: _passController,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  fixedSize: Size(100, 40),
+                SizedBox(
+                  height: 20,
                 ),
-                onPressed: (() async {
-                  final value = User(
-                    name: _nameController.text,
-                    email: _emailController.text,
-                    username: _usernameController.text,
-                    pass: _passController.text,
-                  );
-                  //Hive.openBox<User>('USERS');
+                TextFormField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                  ),
+                  controller: _passController,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Password Required';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: 'Confirm Password',
+                  ),
+                  controller: _cpassController,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Password Confirmation Reqiuired';
+                    }
+                    if (v != _passController.text) {
+                      return 'Password Not Match';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(100, 40),
+                  ),
+                  onPressed: (() {
+                    if (_form.currentState!.validate()) {
+                      final value = User(
+                        name: _nameController.text,
+                        email: _emailController.text,
+                        username: _usernameController.text,
+                        pass: _passController.text,
+                      );
+                      //Hive.openBox<User>('USERS');
 
-                  Hive.box<User>('USERS').add(value);
-                  print('Submit');
+                      Hive.box<User>('USERS').add(value);
+                      print('Submit');
 
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => LoginPage(
-                        title: '',
-                      ),
-                    ),
-                  );
-                }),
-                child: Text('Register'),
-              ),
-            ],
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(
+                            title: '',
+                          ),
+                        ),
+                      );
+                    }
+                  }),
+                  child: const Text('Register'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
